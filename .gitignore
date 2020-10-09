@@ -1,0 +1,8 @@
+*.pyc
+media/
+assets/
+static
+db.sqlite3
+.idea
+debug.log
+*.sublime*
