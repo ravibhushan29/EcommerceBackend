@@ -6,3 +6,4 @@ db.sqlite3
 .idea
 debug.log
 *.sublime*
+.DS_Store

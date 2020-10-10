@@ -20,6 +20,9 @@ class UserManager(BaseUserManager):
 
 
 class UserProfile(BaseModel, AbstractUser):
+    """
+    customizing exist user model to add extra fields
+    """
     ADMIN = "ADMIN"
     CUSTOMER = "CUSTOMER"
     SALES_AGENT = "SALES_AGENT"
