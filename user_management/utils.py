@@ -7,3 +7,10 @@ def create_token(user):
     payload = jwt_payload_handler(user)
     token = jwt_encode_handler(payload)
     return token
+
+
+def send_otp(phone_number, otp):
+    """
+        write logic for send otp
+    """
+    pass

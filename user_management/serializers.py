@@ -24,3 +24,12 @@ class UserProfileSerializer(serializers.ModelSerializer):
 class LoginSerializer(serializers.Serializer):
     username = serializers.CharField(max_length=128)
     password = serializers.CharField(max_length=128)
+
+
+class CustomerLoginSerializer(serializers.Serializer):
+    phone_number = serializers.CharField(max_length=15)
+    otp = serializers.CharField(max_length=6)
+
+
+class OTPSerializer(serializers.Serializer):
+    phone_number = serializers.CharField(max_length=15)

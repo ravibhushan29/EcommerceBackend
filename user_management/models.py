@@ -1,8 +1,12 @@
 from django.contrib.auth.base_user import BaseUserManager
 from django.contrib.auth.models import AbstractUser
 from django.db import models
+from django.utils import timezone
+from django.utils.crypto import get_random_string
+from rest_framework.exceptions import ValidationError
+
 from common.models import BaseModel
-from user_management.utils import create_token
+from user_management.utils import create_token, send_otp
 
 
 class UserManager(BaseUserManager):
@@ -48,6 +52,11 @@ class UserProfile(BaseModel, AbstractUser):
 
     objects = UserManager()
 
+    def save(self, *args, **kwargs):
+        if self.role_type == UserProfile.CUSTOMER:
+            self.phone_number = self.username
+        super(UserProfile, self).save(*args, **kwargs)
+
     @staticmethod
     def exist_username(username):
         user = UserProfile.objects.filter(username=username).first()
@@ -66,3 +75,41 @@ class UserProfile(BaseModel, AbstractUser):
 class PhoneOTP(BaseModel):
     user = models.OneToOneField(UserProfile, on_delete=models.CASCADE)
     otp = models.CharField(max_length=6)
+
+    @property
+    def expire_at(self):
+        return self.created_on + timezone.timedelta(seconds=300)
+
+    def validate_otp(self):
+        """
+        OTP is valid for 5 min
+        """
+        if self.expire_at >= timezone.now():
+            return True
+        raise ValidationError(detail={'otp': ["invalid otp"]})
+
+    @staticmethod
+    def check_otp(otp, username):
+        """
+            passing otp  for test
+        """
+        if otp == '111111':
+            return
+        obj = PhoneOTP.objects.filter(otp=otp, user__username=username).first()
+        if obj:
+            obj.validate_otp()
+            PhoneOTP.objects.filter(otp=otp, user__username=username).delete()
+        return obj
+
+    @staticmethod
+    def create_otp(phone_number):
+        """
+            create random otp
+        """
+        otp = get_random_string(6, allowed_chars='0123456789')
+        obj, created = PhoneOTP.objects.get_or_create(otp=otp, user__username=phone_number)
+        send_otp(phone_number, otp)
+        return obj
+
+
+

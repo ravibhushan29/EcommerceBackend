@@ -141,7 +141,7 @@ REST_FRAMEWORK = {
         'rest_framework.throttling.UserRateThrottle',
         'rest_framework.throttling.ScopedRateThrottle',
     ),
-    # 'EXCEPTION_HANDLER': 'common.custom_exception_handler.custom_exception_handler',
+    'EXCEPTION_HANDLER': 'common.custom_exception_handler.custom_exception_handler',
     'DEFAULT_THROTTLE_RATES': {
         'anon': '60/min',
         'user': '100/min'
