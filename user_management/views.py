@@ -62,7 +62,7 @@ class UserProfileDetailView(GetRetrieveModelMixin,  GenericAPIView):
         return self.retrieve(request, *args, **kwargs)
 
 
-class CustomerLoginViewView(GenericAPIView):
+class CustomerLoginView(GenericAPIView):
     serializer_class = CustomerLoginSerializer
     permission_classes = (AllowAny, )
 
