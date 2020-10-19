@@ -1,5 +1,4 @@
 from django.db import models
-
 from cart.models import Cart
 from common.models import BaseModel
 from user_management.models import UserProfile
@@ -17,7 +16,6 @@ class Order(BaseModel):
     cart = models.ForeignKey(Cart, on_delete=models.PROTECT)
     user = models.ForeignKey(UserProfile, on_delete=models.PROTECT)
     address = models.TextField()
-    order_total = models.DecimalField(max_digits=50, decimal_places=2)
 
     class Meta:
         ordering = ('-created_on',)

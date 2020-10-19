@@ -1,12 +1,12 @@
 from django.contrib.auth.hashers import make_password
 from django.db import transaction
-from rest_framework.exceptions import ValidationError, AuthenticationFailed
+from rest_framework.exceptions import ValidationError
 from rest_framework.generics import GenericAPIView
 from rest_framework.permissions import AllowAny
 
+from common.decorator import required_role
 from user_management.models import UserProfile, PhoneOTP
-from common.views import PostCreateModelMixin, GetListModelMixin, GetRetrieveModelMixin, PutUpdateModelMixin, \
-    DeleteDestroyModelMixin, success_response
+from common.views import PostCreateModelMixin, GetListModelMixin, GetRetrieveModelMixin,  success_response
 from user_management.serializers import LoginSerializer, UserProfileSerializer, CustomerLoginSerializer, OTPSerializer
 
 
@@ -34,11 +34,11 @@ class LoginViewView(GenericAPIView):
 class UserProfileView(PostCreateModelMixin, GetListModelMixin, GenericAPIView):
     queryset = UserProfile.objects.all()
     serializer_class = UserProfileSerializer
-    permission_classes = (AllowAny, )
 
     def initial(self, request, *args, **kwargs):
         super(UserProfileView, self).initial(request, *args, **kwargs)
 
+    @required_role(UserProfile.ADMIN)
     @transaction.atomic
     def post(self, request, *args, **kwargs):
         """
@@ -55,6 +55,7 @@ class UserProfileDetailView(GetRetrieveModelMixin,  GenericAPIView):
     queryset = UserProfile.objects.all()
     serializer_class = UserProfileSerializer
 
+    @required_role(UserProfile.ADMIN)
     def get(self, request, *args, **kwargs):
         """
             api to get detail of user
@@ -88,7 +89,7 @@ class SendOTPView(GenericAPIView):
 
     def post(self, request, *args, **kwargs):
         """
-            api for customer login
+            api for otp for customer
         """
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
